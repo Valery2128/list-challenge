@@ -1,0 +1,71 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-title>Tu Progreso</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <div class="page-header">
+    <h1>Analíticas</h1>
+    <p>Revisa cómo vas con tus objetivos.</p>
+  </div>
+
+  <div class="completion-ring-wrapper">
+    <div class="completion-ring" *ngIf="tasaExito$ | async as pct">
+      <svg viewBox="0 0 100 100" class="ring-svg">
+        <circle class="ring-bg" cx="50" cy="50" r="42" />
+        <circle class="ring-fill" cx="50" cy="50" r="42" [style.stroke-dashoffset]="264 - (264 * pct / 100)"
+          [style.stroke]="pct >= 80 ? '#43D9AD' : pct >= 40 ? '#F5A623' : '#FF6584'" />
+      </svg>
+      <div class="ring-label">
+        <span class="ring-pct">{{ pct }}%</span>
+        <span class="ring-sub">completado</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="stats-grid">
+    <ion-card class="stat-card">
+      <ion-card-content>
+        <div class="stat-value">{{ totalTareas$ | async }}</div>
+        <div class="stat-label">Total</div>
+      </ion-card-content>
+    </ion-card>
+    <ion-card class="stat-card stat-done">
+      <ion-card-content>
+        <div class="stat-value">{{ completadas$ | async }}</div>
+        <div class="stat-label">✅ Hechas</div>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <div class="section-title">Por lista</div>
+
+  <ng-container *ngIf="desgloseCategorias$ | async as lista">
+    <ion-list lines="none" class="cat-stats-list" *ngIf="lista.length > 0; else noData">
+      <ion-item *ngFor="let s of lista; trackBy: trackFicha" class="cat-stat-item">
+        <div class="cat-stat-info">
+          <div class="cat-stat-header">
+            <span class="cat-dot" [style.background]="s.categoria.color"></span>
+            <span class="cat-name">{{ s.categoria.name }}</span>
+            <span class="cat-count">{{ s.hechas }}/{{ s.total }}</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill" [style.width.%]="s.pct" [style.background]="s.categoria.color">
+            </div>
+          </div>
+        </div>
+      </ion-item>
+    </ion-list>
+
+    <ng-template #noData>
+      <div class="empty-state">
+        <ion-icon name="bar-chart-outline"></ion-icon>
+        <h3>Sin datos</h3>
+        <p>Añade tareas para ver el desglose.</p>
+      </div>
+    </ng-template>
+  </ng-container>
+
+</ion-content>
