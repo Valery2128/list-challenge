@@ -1,0 +1,134 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-title>
+      <span class="app-logo">ListTask</span>
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button
+        fill="clear"
+        color="primary"
+        (click)="abrirDialogoCrear()">
+        <ion-icon slot="icon-only" name="add-circle"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <div class="filter-bar">
+    <ion-segment
+      [value]="(filtroActual$ | async)"
+      (ionChange)="alCambiarFiltro($event)"
+      mode="md">
+      <ion-segment-button value="all">
+        <ion-label>Todas</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="pending">
+        <ion-label>Pendientes</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="completed">
+        <ion-label>Hechas</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </div>
+
+  <ng-container *ngIf="categorias$ | async as cats">
+
+    <div class="category-chips" *ngIf="cats.length > 0">
+      <ion-chip
+        *ngFor="let cat of cats; trackBy: trackCat"
+        [style.--chip-bg]="cat.color"
+        [class.active-chip]="(filtroActual$ | async) === cat.id"
+        (click)="seleccionarFiltro(cat.id)">
+        <span class="cat-dot" [style.background]="cat.color"></span>
+        {{ cat.name }}
+      </ion-chip>
+    </div>
+
+    <ion-card class="quick-add-card">
+      <ion-item lines="none">
+        <ion-input
+          [(ngModel)]="tituloNuevaTarea"
+          placeholder="Añadir una tarea..."
+          (keyup.enter)="alCrearTareaRapida()"
+          clearInput="true">
+        </ion-input>
+        <ion-select
+          slot="end"
+          [(ngModel)]="idCategoriaSeleccionada"
+          placeholder="Lista"
+          interface="popover">
+          <ion-select-option value="default">General</ion-select-option>
+          <ion-select-option
+            *ngFor="let cat of cats; trackBy: trackCat"
+            [class.ion-hide]="cat.id === 'default'"
+            [value]="cat.id">
+            {{ cat.name }}
+          </ion-select-option>
+        </ion-select>
+        <ion-button
+          slot="end"
+          fill="clear"
+          color="primary"
+          [disabled]="!tituloNuevaTarea.trim()"
+          (click)="alCrearTareaRapida()">
+          <ion-icon slot="icon-only" name="arrow-forward-circle"></ion-icon>
+        </ion-button>
+      </ion-item>
+    </ion-card>
+
+    <ng-container *ngIf="tareasFiltradas$ | async as tareas">
+
+      <ion-list lines="none" class="task-list">
+        <ion-item-sliding
+          *ngFor="let tarea of tareas; trackBy: trackTarea">
+
+          <ion-item class="task-item" [class.task-done]="tarea.completed">
+            <ion-checkbox
+              slot="start"
+              [checked]="tarea.completed"
+              (click)="$event.stopPropagation(); alCambiarEstado(tarea)">
+            </ion-checkbox>
+
+            <ion-label>
+              <h3 [class.strikethrough]="tarea.completed">{{ tarea.title }}</h3>
+              <p class="task-meta" *ngIf="tarea.categoryId">
+                <span
+                  class="cat-badge"
+                  [style.background]="obtenerColor(tarea.categoryId, cats)">
+                  {{ obtenerNombre(tarea.categoryId, cats) }}
+                </span>
+              </p>
+            </ion-label>
+          </ion-item>
+
+          <ion-item-options side="end">
+            <ion-item-option
+              color="danger"
+              expandable
+              (click)="alBorrarTarea(tarea)">
+              <ion-icon slot="icon-only" name="trash"></ion-icon>
+            </ion-item-option>
+          </ion-item-options>
+
+        </ion-item-sliding>
+      </ion-list>
+
+      <div class="empty-state" *ngIf="tareas.length === 0">
+        <ion-icon name="sparkles-outline"></ion-icon>
+        <h3>¡Todo listo!</h3>
+        <p>No tienes tareas pendientes aquí.</p>
+      </div>
+
+    </ng-container>
+
+  </ng-container>
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button color="primary" (click)="abrirDialogoCrear()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+</ion-content>

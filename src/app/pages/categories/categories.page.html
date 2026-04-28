@@ -1,0 +1,71 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-title>Categorías</ion-title>
+    <ion-buttons slot="end">
+      <ion-button fill="clear" color="primary" (click)="alAgregar()">
+        <ion-icon slot="icon-only" name="add-circle"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <div class="page-header">
+    <h1>Mis Listas</h1>
+    <p>Organiza tus tareas por contexto.</p>
+  </div>
+
+  <ng-container *ngIf="categorias$ | async as lista">
+
+    <ion-list lines="none" class="categories-list">
+      <ion-item-sliding
+        *ngFor="let c of lista; trackBy: trackCat">
+
+        <ion-item class="category-item">
+          <div class="color-swatch" [style.background]="c.color" slot="start"></div>
+
+          <ion-label>
+            <h3>{{ c.name }}</h3>
+            <p>{{ c.conteo }} tareas en esta lista</p>
+          </ion-label>
+
+          <ng-container *ngIf="c.id !== 'default'">
+            <ion-button fill="clear" color="medium" slot="end" (click)="alEditar(c)">
+              <ion-icon slot="icon-only" name="create-outline"></ion-icon>
+            </ion-button>
+            <ion-button fill="clear" color="danger" slot="end" (click)="alBorrar(c)">
+              <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+            </ion-button>
+          </ng-container>
+
+          <ion-badge *ngIf="c.id === 'default'" slot="end" color="medium">Raíz</ion-badge>
+        </ion-item>
+
+        <ion-item-options side="end" *ngIf="c.id !== 'default'">
+          <ion-item-option color="warning" (click)="alEditar(c)">
+            <ion-icon slot="icon-only" name="create"></ion-icon>
+          </ion-item-option>
+          <ion-item-option color="danger" expandable (click)="alBorrar(c)">
+            <ion-icon slot="icon-only" name="trash"></ion-icon>
+          </ion-item-option>
+        </ion-item-options>
+
+      </ion-item-sliding>
+    </ion-list>
+
+    <div class="empty-state" *ngIf="lista.length === 0">
+      <ion-icon name="folder-open-outline"></ion-icon>
+      <h3>Sin listas</h3>
+      <p>Crea una categoría para empezar.</p>
+    </div>
+
+  </ng-container>
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button color="primary" (click)="alAgregar()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+</ion-content>

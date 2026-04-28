@@ -1,0 +1,25 @@
+<ion-tabs>
+  <ion-tab-bar slot="bottom">
+
+    <ion-tab-button tab="tasks" href="/tabs/tasks" id="tab-tasks">
+      <ion-icon name="checkbox-outline"></ion-icon>
+      <ion-label>Tareas</ion-label>
+    </ion-tab-button>
+
+    <ion-tab-button tab="categories" href="/tabs/categories" id="tab-categories">
+      <ion-icon name="pricetag-outline"></ion-icon>
+      <ion-label>Categorías</ion-label>
+    </ion-tab-button>
+
+    <!-- Este tab solo aparece cuando el feature flag 'show_stats_tab' está activo en Firebase -->
+    <ion-tab-button
+      *ngIf="mostrarEstadisticas"
+      tab="stats"
+      href="/tabs/stats"
+      id="tab-stats">
+      <ion-icon name="bar-chart-outline"></ion-icon>
+      <ion-label>Estadísticas</ion-label>
+    </ion-tab-button>
+
+  </ion-tab-bar>
+</ion-tabs>
