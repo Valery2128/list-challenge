@@ -40,7 +40,7 @@ export class CategoryService {
   public async modificar(id: string, nombre: string, color: string): Promise<void> {
     if (id === 'default') return;
 
-    const lista = this._categorias$.value.map(c => 
+    const lista = this._categorias$.value.map(c =>
       c.id === id ? { ...c, name: nombre.trim(), color } : c
     );
     await this.actualizarEstado(lista);
@@ -60,8 +60,11 @@ export class CategoryService {
 
   private async cargarDesdeDisco(): Promise<void> {
     const guardadas = await this.storage.obtener<Category[]>(CLAVE_CATEGORIAS, [this.CATEGORIA_RAIZ]);
+
+    /* Aseguramos integridad: la categoría General siempre debe estar presente */
     const tieneRaiz = guardadas.some(c => c.id === 'default');
     const definitivas = tieneRaiz ? guardadas : [this.CATEGORIA_RAIZ, ...guardadas];
+
     this._categorias$.next(definitivas);
   }
 }

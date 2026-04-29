@@ -1,5 +1,9 @@
 import { Injectable } from '@angular/core';
 
+export const FEATURE_FLAGS = {
+  MOSTRAR_ESTADISTICAS: 'show_stats_tab',
+} as const;
+
 @Injectable({
   providedIn: 'root'
 })
@@ -27,7 +31,7 @@ export class RemoteConfigService {
     }
   }
 
-  public obtenerBooleano(clave: string): boolean {
+  public obtenerFlag(clave: string): boolean {
     return !!(this.configuracion[clave]);
   }
 
