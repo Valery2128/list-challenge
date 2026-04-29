@@ -1,32 +1,41 @@
 import { Injectable } from '@angular/core';
 
-export const FEATURE_FLAGS = {
-  MOSTRAR_ESTADISTICAS: 'show_stats_tab',
-} as const;
-
 @Injectable({
   providedIn: 'root'
 })
 export class RemoteConfigService {
-  private _configuracion: Record<string, boolean | string> = {
-    [FEATURE_FLAGS.MOSTRAR_ESTADISTICAS]: true,
+  
+  /* Valores locales para que la app no rompa si Firebase falla */
+  private configuracion: Record<string, any> = {
+    'show_stats_tab': true,
+    'task_limit': 50
   };
 
   constructor() {}
 
+  /* Simula la carga de datos remotos desde Firebase */
   public async inicializar(): Promise<void> {
-    console.log('[RemoteConfig] Online');
+    try {
+      // Log para verificar que el servicio arranca en consola
+      console.log('[RemoteConfig] Sincronizando con Firebase...');
+      
+      /* En un entorno real aquí haríamos:
+         await this.remoteConfig.fetchAndActivate();
+      */
+    } catch (e) {
+      console.warn('Usando configuración local por error en la red');
+    }
   }
 
-  public obtenerFlag(clave: string): boolean {
-    return (this._configuracion[clave] ?? false) as boolean;
+  public obtenerBooleano(clave: string): boolean {
+    return !!(this.configuracion[clave]);
   }
 
-  public obtenerParametro(clave: string): string {
-    return (this._configuracion[clave] ?? '') as string;
+  public obtenerTexto(clave: string): string {
+    return String(this.configuracion[clave] || '');
   }
 
-  public simularValor(clave: string, valor: boolean | string): void {
-    this._configuracion[clave] = valor;
+  public obtenerNumero(clave: string): number {
+    return Number(this.configuracion[clave] || 0);
   }
 }
